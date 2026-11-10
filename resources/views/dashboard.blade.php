@@ -3,7 +3,6 @@
 @section('title', 'Dashboard')
 
 @section('content')
-{{-- Pita header navy --}}
 <section class="pita relative bg-navy text-white">
     @include('partials.hiasan-pita')
 
@@ -12,7 +11,6 @@
             <p class="flex items-center gap-2 text-sm text-[#DBEAFE]">
                 <x-ikon nama="kalender" class="h-4 w-4" /> {{ $tanggalHariIni }}
             </p>
-            {{-- $username dikirim dari PageController (diambil dari query string) --}}
             <h1 class="mt-2 font-judul text-3xl font-bold sm:text-4xl">Halo, {{ $username }} 👋</h1>
             <p class="mt-2 max-w-xl text-[15px] text-[#DBEAFE]">
                 @if ($ringkasan['kelas_hari_ini'] > 0)
@@ -30,7 +28,6 @@
 </section>
 
 <div class="relative mx-auto -mt-20 max-w-7xl px-4 sm:px-6">
-    {{-- 3 kartu ringkasan, memakai @include + data dari controller --}}
     <div class="grid gap-4 md:grid-cols-3 md:gap-5">
         @include('partials.kartu-ringkasan', [
             'urutan' => 0,
@@ -56,14 +53,12 @@
     </div>
 
     <div class="mt-5 grid gap-5 lg:grid-cols-2">
-        {{-- Jadwal hari ini --}}
         <section class="kartu muncul self-start p-5 sm:p-6" style="--i: 3">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="font-judul text-lg font-semibold">Jadwal Hari Ini</h2>
                 <a href="{{ route('pengelolaan', ['username' => $username]) }}" class="link-kecil">Lihat semua <x-ikon nama="panah" class="h-3.5 w-3.5" /></a>
             </div>
 
-            {{-- @forelse: ulangi array kelas hari ini; @empty dipakai kalau array kosong (Sabtu/Minggu) --}}
             <ul class="space-y-3">
                 @forelse ($kelasHariIni as $kelas)
                     <li class="muncul flex items-center gap-4 rounded-xl border border-garis bg-latar px-4 py-3.5" style="--i: {{ $loop->index + 4 }}">
@@ -87,7 +82,6 @@
             @endif
         </section>
 
-        {{-- Deadline terdekat --}}
         <section class="kartu muncul p-5 sm:p-6" style="--i: 4">
             <div class="mb-2 flex items-center justify-between">
                 <h2 class="font-judul text-lg font-semibold">Deadline Terdekat</h2>

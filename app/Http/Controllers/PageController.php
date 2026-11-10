@@ -7,26 +7,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-/**
- * PageController = "otak" aplikasi KULIYAAH.
- *
- * Alur MVC di aplikasi ini:
- *   Browser -> routes/web.php -> PageController (ambil request + siapkan data array) -> view Blade
- *
- * Aplikasi ini TIDAK memakai database. Semua data disimpan sebagai array PHP
- * di method private di bawah, lalu dikirim ke view lewat view('nama', [...]).
- * View hanya bertugas menampilkan data, bukan menghitung.
- */
 class PageController extends Controller
 {
-    // =====================================================================
-    // DATA (array PHP, pengganti database)
-    // =====================================================================
-
-    /**
-     * Akun yang boleh login (cuma satu, disimpan sebagai array, BUKAN database).
-     * Ganti username/password di sini kalau mau.
-     */
     private function dataAkun(): array
     {
         return [
@@ -35,7 +17,6 @@ class PageController extends Controller
         ];
     }
 
-    /** Data profil mahasiswa. Username TIDAK ditulis di sini, karena diambil dari request. */
     private function dataProfil(): array
     {
         return [
@@ -46,7 +27,6 @@ class PageController extends Controller
         ];
     }
 
-    /** 13 jadwal kuliah beserta tugasnya. */
     private function dataJadwal(): array
     {
         return [
@@ -66,7 +46,6 @@ class PageController extends Controller
         ];
     }
 
-    /** Warna tiap hari (array hari => warna), dipakai untuk pill jam dan titik kolom. */
     private function warnaHari(): array
     {
         return [
@@ -78,24 +57,13 @@ class PageController extends Controller
         ];
     }
 
-    // =====================================================================
-    // HALAMAN
-    // =====================================================================
-
-    /** GET / -> tampilkan form login. */
     public function loginForm(): View
     {
         return view('login');
     }
 
-    /**
-     * POST /login -> terima data form login.
-     * Tidak ada pengecekan ke database: input divalidasi lalu dicocokkan dengan
-     * array dataAkun(). Kalau cocok, username dikirim ke dashboard lewat query string (?username=...).
-     */
     public function login(Request $request): RedirectResponse
     {
-        // Kalau validasi gagal, Laravel otomatis kembali ke form + pesan @error.
         $request->validate([
             'username' => 'required|alpha_dash|max:50',
             'password' => 'required',
@@ -108,22 +76,17 @@ class PageController extends Controller
 
         $akun = $this->dataAkun();
 
-        // Cocokkan dengan akun di array (username tidak peka huruf besar/kecil,
-        // password harus persis). Kalau salah, kembali ke form + pesan error.
         $usernameCocok = strtolower($request->input('username')) === strtolower($akun['username']);
         $passwordCocok = $request->input('password') === $akun['password'];
         if (! $usernameCocok || ! $passwordCocok) {
             return redirect()->route('login')->with('gagal', 'Username atau password salah.');
         }
 
-        // Hasilnya: redirect ke /dashboard?username=Ren
         return redirect()->route('dashboard', ['username' => $akun['username']]);
     }
 
-    /** GET /dashboard?username=... */
     public function dashboard(Request $request): View|RedirectResponse
     {
-        // Ambil username dari Request Parameter (query string).
         $username = $request->query('username');
         if (! $this->usernameValid($username)) {
             return redirect()->route('login');
@@ -133,12 +96,10 @@ class PageController extends Controller
         $hariIni = $this->namaHariIni();
         $jamSekarang = now()->format('H:i');
 
-        // Kelas hari ini + tandai kelas "Berikutnya" (kelas pertama yang belum mulai).
         $kelasHariIni = collect($jadwal)->where('hari', $hariIni)->sortBy('jam_mulai')->values()->all();
         $idBerikutnya = collect($kelasHariIni)->first(fn ($k) => $k['jam_mulai'] > $jamSekarang)['id'] ?? null;
         $semuaKelasLewat = count($kelasHariIni) > 0 && $idBerikutnya === null;
 
-        // 5 deadline terdekat yang statusnya Belum.
         $deadlineTerdekat = collect($jadwal)
             ->where('status', 'Belum')
             ->sortBy('deadline')
@@ -146,7 +107,6 @@ class PageController extends Controller
             ->values()
             ->all();
 
-        // Tugas Belum dengan deadline 0-7 hari ke depan (untuk kalimat ringkasan).
         $tugasMingguIni = collect($jadwal)
             ->where('status', 'Belum')
             ->filter(fn ($t) => $t['sisa_angka'] >= 0 && $t['sisa_angka'] <= 7)
@@ -167,7 +127,6 @@ class PageController extends Controller
         ]);
     }
 
-    /** GET /pengelolaan?username=... -> halaman Jadwal & Tugas (papan per hari). */
     public function pengelolaan(Request $request): View|RedirectResponse
     {
         $username = $request->query('username');
@@ -177,15 +136,12 @@ class PageController extends Controller
 
         $jadwal = $this->jadwalLengkap();
 
-        // Kelompokkan jadwal per hari: ['Senin' => [...], 'Selasa' => [...], ...]
         $jadwalPerHari = collect($jadwal)->groupBy('hari');
 
-        // Rentang tanggal minggu ini, contoh "9 - 13 November 2026".
         $senin = now()->startOfWeek(Carbon::MONDAY);
         $jumat = $senin->copy()->addDays(4);
         $rentangMinggu = $senin->format('j').' – '.$jumat->locale('id')->translatedFormat('j F Y');
 
-        // Posisi kolom hari ini di papan (0 = Senin). Sabtu/Minggu -> kolom Senin.
         $daftarHari = array_keys($this->warnaHari());
         $indexHariIni = array_search($this->namaHariIni(), $daftarHari);
 
@@ -204,7 +160,6 @@ class PageController extends Controller
         ]);
     }
 
-    /** GET /profile?username=... */
     public function profile(Request $request): View|RedirectResponse
     {
         $username = $request->query('username');
@@ -215,7 +170,6 @@ class PageController extends Controller
         $jadwal = $this->jadwalLengkap();
         $ringkasan = $this->ringkasan($jadwal);
 
-        // Jumlah kelas per hari + persentase panjang bar (dibanding hari terbanyak).
         $jumlahPerHari = collect($jadwal)->countBy('hari');
         $terbanyak = $jumlahPerHari->max();
         $kelasPerHari = [];
@@ -239,11 +193,6 @@ class PageController extends Controller
         ]);
     }
 
-    // =====================================================================
-    // HELPER (perhitungan dilakukan di controller, bukan di view)
-    // =====================================================================
-
-    /** Jadwal + kolom tambahan hasil hitungan: teks tanggal dan sisa hari. */
     private function jadwalLengkap(): array
     {
         $hasil = [];
@@ -251,8 +200,8 @@ class PageController extends Controller
             $deadline = Carbon::parse($item['deadline'])->locale('id');
             $sisa = (int) now()->startOfDay()->diffInDays($deadline->copy()->startOfDay(), false);
 
-            $item['deadline_teks'] = $deadline->translatedFormat('d M Y');   // 14 Nov 2026
-            $item['deadline_pendek'] = $deadline->translatedFormat('j M');   // 14 Nov
+            $item['deadline_teks'] = $deadline->translatedFormat('d M Y');
+            $item['deadline_pendek'] = $deadline->translatedFormat('j M');
             $item['sisa_angka'] = $sisa;
             $item['sisa_teks'] = $this->teksSisaHari($sisa);
             $item['warna'] = $this->warnaHari()[$item['hari']];
@@ -262,7 +211,6 @@ class PageController extends Controller
         return $hasil;
     }
 
-    /** Ubah selisih hari menjadi teks: Hari ini / Besok / N hari lagi / Terlambat. */
     private function teksSisaHari(int $sisa): string
     {
         if ($sisa < 0) {
@@ -278,7 +226,6 @@ class PageController extends Controller
         return $sisa.' hari lagi';
     }
 
-    /** Angka-angka ringkasan yang dipakai di Dashboard, Jadwal & Tugas, dan Profil. */
     private function ringkasan(array $jadwal): array
     {
         $koleksi = collect($jadwal);
@@ -286,35 +233,31 @@ class PageController extends Controller
         $kelasHariIni = $koleksi->where('hari', $hariIni)->sortBy('jam_mulai');
 
         return [
-            'total_matkul' => $koleksi->pluck('matkul')->unique()->count(), // 11 (matkul unik)
-            'total_tugas' => $koleksi->count(),                              // 13
-            'selesai' => $koleksi->where('status', 'Selesai')->count(),      // 5
-            'belum' => $koleksi->where('status', 'Belum')->count(),          // 8
+            'total_matkul' => $koleksi->pluck('matkul')->unique()->count(),
+            'total_tugas' => $koleksi->count(),
+            'selesai' => $koleksi->where('status', 'Selesai')->count(),
+            'belum' => $koleksi->where('status', 'Belum')->count(),
             'persen_selesai' => round($koleksi->where('status', 'Selesai')->count() / max($koleksi->count(), 1) * 100),
             'kelas_hari_ini' => $kelasHariIni->count(),
             'kelas_pertama' => $kelasHariIni->first()['jam_mulai'] ?? null,
         ];
     }
 
-    /** Username di query string harus ada dan sama dengan akun (kalau tidak, kembali ke login). */
     private function usernameValid(?string $username): bool
     {
         return ! empty($username) && strtolower($username) === strtolower($this->dataAkun()['username']);
     }
 
-    /** Cek apakah foto profil ada di public/images (kalau tidak, tampilkan inisial). */
     private function adaFoto(): bool
     {
         return file_exists(public_path('images/foto-profil.jpg'));
     }
 
-    /** Nama hari ini dalam bahasa Indonesia, contoh "Selasa". */
     private function namaHariIni(): string
     {
         return ucfirst(now()->locale('id')->dayName);
     }
 
-    /** Tanggal hari ini, contoh "Selasa, 10 November 2026". */
     private function tanggalHariIni(): string
     {
         return now()->locale('id')->translatedFormat('l, j F Y');

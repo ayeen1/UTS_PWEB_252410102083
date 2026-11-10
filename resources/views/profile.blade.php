@@ -13,14 +13,12 @@
 </section>
 
 <div class="relative mx-auto -mt-20 grid max-w-5xl gap-5 px-4 sm:px-6 lg:grid-cols-[1.15fr_1fr]">
-    {{-- Kartu profil --}}
     <section class="kartu muncul self-start overflow-hidden" style="--i: 0">
         <div class="relative h-24 overflow-hidden bg-aksen sm:h-28">
             <span class="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-[#F8B533]" aria-hidden="true"></span>
         </div>
         <div class="px-5 pb-6 sm:px-7">
             <div class="relative z-10 -mt-12 flex items-end gap-4">
-                {{-- Foto profil, fallback ke inisial kalau file public/images/foto-profil.jpg tidak ada --}}
                 @if ($adaFoto)
                     <img src="{{ asset('images/foto-profil.jpg') }}" alt="Foto profil {{ $profil['nama_lengkap'] }}"
                          class="h-24 w-24 shrink-0 rounded-full border-4 border-white bg-papan object-cover shadow-md">
@@ -38,7 +36,6 @@
             <dl class="mt-6 grid gap-3 sm:grid-cols-2">
                 <div class="kotak-info">
                     <dt>Username</dt>
-                    {{-- username dari query string, dikirim controller --}}
                     <dd>{{ $username }}</dd>
                 </div>
                 <div class="kotak-info">
@@ -53,7 +50,6 @@
 
             <hr class="my-5 border-garis">
 
-            {{-- Logout: kembali ke halaman login (tanpa session, cukup pindah halaman) --}}
             <a href="{{ route('login') }}" class="tombol-garis">
                 <x-ikon nama="keluar" class="h-4 w-4" /> Logout
             </a>
@@ -61,7 +57,6 @@
     </section>
 
     <div class="space-y-5">
-        {{-- Ringkasan --}}
         <section class="kartu muncul p-5 sm:p-6" style="--i: 1">
             <h2 class="font-judul text-lg font-semibold">Ringkasan</h2>
             <div class="mt-4 grid grid-cols-2 gap-3">
@@ -80,7 +75,6 @@
                     <span class="font-medium">Progres tugas</span>
                     <span class="font-bold tabular-nums"><span>{{ $ringkasan['selesai'] }}</span> / {{ $ringkasan['total_tugas'] }}</span>
                 </div>
-                {{-- Lebar bar diisi app.js dari 0 ke nilai sebenarnya --}}
                 <div class="mt-2 h-2.5 overflow-hidden rounded-full bg-papan">
                     <div class="bar-isi h-full rounded-full bg-selesai"
                          data-isi="{{ $ringkasan['persen_selesai'] }}"></div>
@@ -89,7 +83,6 @@
             </div>
         </section>
 
-        {{-- Kelas per hari --}}
         <section class="kartu muncul p-5 sm:p-6" style="--i: 2">
             <h2 class="font-judul text-lg font-semibold">Kelas per Hari</h2>
             <ul class="mt-4 space-y-3">

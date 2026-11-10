@@ -1,17 +1,13 @@
-{{-- @extends: halaman ini memakai kerangka layouts/app.blade.php --}}
 @extends('layouts.app')
 
-{{-- @section('title') mengisi @yield('title') di layout --}}
 @section('title', 'Masuk')
 @section('body_class', 'bg-navy')
 
 @section('content')
 <section class="relative flex min-h-screen items-center justify-center overflow-hidden bg-navy px-4 py-10">
 
-    {{-- Hiasan latar (solid): garis lingkaran, bulatan, titik amber --}}
     @include('partials.hiasan-pita')
 
-    {{-- Kotak ikon kecil yang melayang pelan --}}
     <div class="pointer-events-none absolute inset-0 hidden md:block" aria-hidden="true">
         <span class="ikon-hias left-[11%] top-[20%]" style="--d: 0s">
             <x-ikon nama="clipboard" class="h-6 w-6" />
@@ -27,7 +23,6 @@
         </span>
     </div>
 
-    {{-- Kartu login --}}
     <div class="kartu-login relative w-full max-w-[420px] rounded-3xl bg-white px-6 py-8 shadow-[0_24px_48px_-12px_rgba(15,23,42,.35)] sm:px-9 sm:py-10">
         <div class="flex justify-center">
             <x-logo :ukuran="48" />
@@ -37,12 +32,10 @@
             Atur jadwal kuliah dan pantau deadline tugas dalam satu tempat.
         </p>
 
-        {{-- @session menampilkan pesan flash dari controller (username/password salah) --}}
         @session('gagal')
             <p class="mt-6 rounded-xl bg-belum px-4 py-3 text-sm font-semibold text-white" role="alert">{{ $value }}</p>
         @endsession
 
-        {{-- Form login: method POST ke route login.proses, wajib @csrf --}}
         <form action="{{ route('login.proses') }}" method="POST" class="mt-7 space-y-4" novalidate>
             @csrf
 
@@ -50,11 +43,9 @@
                 <label for="username" class="mb-1.5 block text-sm font-semibold">Username</label>
                 <div class="input-ikon @error('username') is-error @enderror">
                     <x-ikon nama="profil" class="h-[18px] w-[18px] text-teks-2" />
-                    {{-- old('username') mengisi kembali input kalau validasi gagal --}}
                     <input id="username" name="username" type="text" value="{{ old('username') }}"
                            placeholder="Masukkan username" autocomplete="username" autofocus>
                 </div>
-                {{-- @error menampilkan pesan validasi dari controller --}}
                 @error('username')
                     <p class="mt-1.5 text-sm font-medium text-belum">{{ $message }}</p>
                 @enderror

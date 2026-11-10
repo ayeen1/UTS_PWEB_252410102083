@@ -1,8 +1,3 @@
-{{--
-    Kartu mata kuliah di papan Jadwal & Tugas.
-    Dipanggil di pengelolaan.blade.php: <x-kartu-matkul :item="$item" :urutan="$loop->index" />
-    $item berisi satu baris array jadwal dari PageController.
---}}
 @props(['item', 'urutan' => 0])
 
 @php($selesai = $item['status'] === 'Selesai')
@@ -12,7 +7,6 @@
          data-tugas-id="{{ $item['id'] }}"
          data-cari="{{ strtolower($item['matkul'].' '.$item['tugas']) }}">
     <div class="flex items-center justify-between gap-2">
-        {{-- pill jam berwarna hari (solid) --}}
         <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold text-white tabular-nums"
               style="background: {{ $item['warna'] }}">
             <x-ikon nama="jam" class="h-3.5 w-3.5" />
@@ -33,7 +27,6 @@
         <span class="inline-flex items-center gap-1.5 whitespace-nowrap text-xs text-teks-2 tabular-nums">
             <x-ikon nama="kalender" class="h-3.5 w-3.5" /> {{ $item['deadline_teks'] }}
         </span>
-        {{-- chip status: bisa diklik, diatur oleh app.js --}}
         <button type="button" class="chip-status {{ $selesai ? 'is-selesai' : 'is-belum' }}"
                 data-id="{{ $item['id'] }}" aria-pressed="{{ $selesai ? 'true' : 'false' }}"
                 aria-label="Ubah status tugas {{ $item['tugas'] }}">

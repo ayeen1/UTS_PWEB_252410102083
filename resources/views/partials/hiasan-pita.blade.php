@@ -1,7 +1,3 @@
-{{--
-    Hiasan pita header navy (dipanggil dengan @include('partials.hiasan-pita')).
-    Semua warna solid: garis lingkaran #2F52A8, bulatan #26449A, titik amber.
---}}
 <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
     <span class="absolute -left-40 top-24 h-80 w-80 rounded-full border border-[#2F52A8]"></span>
     <span class="absolute -right-24 -top-40 h-[460px] w-[460px] rounded-full border border-[#2F52A8]"></span>

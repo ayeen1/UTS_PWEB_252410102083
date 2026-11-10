@@ -1,9 +1,3 @@
-/* =====================================================================
-   KULIYAAH - CSS tambahan (animasi + komponen kecil)
-   Tata letak utama memakai class Tailwind di file Blade.
-   Aturan warna: semua SOLID, tanpa gradasi, tanpa blur, tanpa ungu.
-   ===================================================================== */
-
 :root {
     --navy: #1E3A8A;
     --navy-tua: #172E6E;
@@ -20,16 +14,13 @@
     --lambat: cubic-bezier(.22, .61, .36, 1);
 }
 
-/* Warna latar ditulis juga di sini supaya tidak ada kilatan putih saat pindah halaman */
 html { background: var(--latar); }
 body { background: var(--latar); color: var(--teks); font-family: "Inter", system-ui, sans-serif; }
 body.bg-navy { background: var(--navy); }
 .tabular-nums { font-variant-numeric: tabular-nums; }
 
-/* ---------- 1. Transisi antarhalaman (View Transitions) ---------- */
 @view-transition { navigation: auto; }
 
-/* Navbar tetap diam, hanya isi halaman yang bergeser */
 header.sticky { view-transition-name: navbar; }
 .halaman { view-transition-name: isi-halaman; }
 
@@ -39,14 +30,11 @@ header.sticky { view-transition-name: navbar; }
 @keyframes keluar-halaman { to { opacity: 0; transform: translateY(-8px); } }
 @keyframes masuk-halaman { from { opacity: 0; transform: translateY(16px); } }
 
-/* Cadangan untuk browser yang belum mendukung View Transitions: fade-up saat dimuat */
 @supports not (view-transition-name: none) {
     .halaman { animation: masuk-halaman 380ms var(--lambat) both; }
 }
 
-/* ---------- 2. Muncul berurutan (jeda dari $loop->index) ---------- */
 .muncul {
-    /* backwards: setelah animasi selesai, efek hover tetap bisa jalan */
     animation: fade-up 480ms var(--lambat) backwards;
     animation-delay: calc(var(--i, 0) * 60ms);
 }
@@ -55,7 +43,6 @@ header.sticky { view-transition-name: navbar; }
     to { opacity: 1; transform: none; }
 }
 
-/* ---------- 3. Kartu + hover terangkat ---------- */
 .kartu {
     background: #FFFFFF;
     border-radius: 16px;
@@ -66,7 +53,6 @@ header.sticky { view-transition-name: navbar; }
     .kartu:hover { transform: translateY(-3px); box-shadow: var(--bayangan-tebal); }
 }
 
-/* ---------- Navbar ---------- */
 .nav-link {
     position: relative;
     display: inline-flex; align-items: center; gap: .5rem;
@@ -83,7 +69,6 @@ header.sticky { view-transition-name: navbar; }
     height: 3px; border-radius: 3px; background: var(--aksen);
 }
 
-/* ---------- 10. Menu hamburger mobile (panel dari kanan) ---------- */
 .latar-menu {
     position: fixed; inset: 0; z-index: 50;
     background: rgba(15, 23, 42, .45);
@@ -109,7 +94,6 @@ header.sticky { view-transition-name: navbar; }
     content: ""; margin-left: auto; width: 8px; height: 8px; border-radius: 50%; background: var(--aksen);
 }
 
-/* ---------- Tombol ---------- */
 .tombol-utama {
     display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
     min-height: 48px; padding: .75rem 1.25rem;
@@ -140,7 +124,6 @@ header.sticky { view-transition-name: navbar; }
 }
 .link-kecil:hover { text-decoration: underline; }
 
-/* ---------- Input ---------- */
 .input-ikon, .kotak-cari {
     display: flex; align-items: center; gap: .6rem;
     min-height: 48px; padding: 0 .9rem;
@@ -159,7 +142,6 @@ header.sticky { view-transition-name: navbar; }
 }
 .kotak-cari input::-webkit-search-cancel-button { cursor: pointer; }
 
-/* ---------- 9. Login: kartu naik + ikon melayang ---------- */
 .kartu-login { animation: naik-masuk 620ms var(--lambat) both; }
 @keyframes naik-masuk {
     from { opacity: 0; transform: translateY(40px); }
@@ -182,14 +164,12 @@ header.sticky { view-transition-name: navbar; }
     50% { translate: 0 -12px; }
 }
 
-/* ---------- Kotak info profil ---------- */
 .kotak-info {
     padding: .85rem 1rem; border: 1px solid var(--garis); border-radius: 12px; background: #F8FAFC;
 }
 .kotak-info dt { font-size: .75rem; color: var(--teks-2); }
 .kotak-info dd { margin-top: .15rem; font-weight: 600; }
 
-/* ---------- 7. Dashboard: garis amber deadline terdekat memanjang ---------- */
 .baris-deadline.is-terdekat .tanggal-deadline::after {
     content: ""; position: absolute; left: 0; bottom: -6px;
     width: 42px; height: 3px; border-radius: 3px; background: var(--aksen);
@@ -198,14 +178,12 @@ header.sticky { view-transition-name: navbar; }
 @keyframes garis-panjang { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .baris-deadline[hidden] { display: none; }
 
-/* ---------- 8. Profil: bar terisi dari 0 ---------- */
 .bar-isi {
     width: 0;
     transition: width 900ms var(--lambat);
     transition-delay: calc(var(--i, 0) * 80ms + 150ms);
 }
 
-/* ---------- Papan Jadwal & Tugas ---------- */
 .chip-ringkas {
     display: inline-flex; align-items: center; gap: .35rem;
     min-height: 34px; padding: .35rem .8rem;
@@ -235,7 +213,6 @@ header.sticky { view-transition-name: navbar; }
 .kartu-matkul { padding: 14px; }
 .chip-status { white-space: nowrap; }
 
-/* judul tugas dicoret kalau Selesai, warna coretan muncul dengan transisi */
 .judul-tugas {
     text-decoration-line: line-through;
     text-decoration-thickness: 1.5px;
@@ -244,7 +221,6 @@ header.sticky { view-transition-name: navbar; }
 }
 .judul-tugas.is-selesai { text-decoration-color: currentColor; color: var(--teks-2); }
 
-/* ---------- 4. Chip status (bisa diklik) ---------- */
 .chip-status {
     display: inline-flex; align-items: center; gap: .3rem;
     min-height: 28px; padding: .2rem .65rem;
@@ -253,7 +229,6 @@ header.sticky { view-transition-name: navbar; }
     transition: background-color 220ms ease;
     position: relative;
 }
-/* area sentuh minimal 44px tanpa mengubah ukuran chip */
 .chip-status::before { content: ""; position: absolute; inset: -8px -4px; }
 .chip-status.is-belum { background: var(--belum); }
 .chip-status.is-selesai { background: var(--selesai); }
@@ -271,11 +246,9 @@ header.sticky { view-transition-name: navbar; }
     100% { transform: scale(1); }
 }
 
-/* ---------- 5. Pencarian: kartu mengecil lalu hilang ---------- */
 .kartu-matkul.is-menghilang { opacity: 0; transform: scale(.92); }
 .kartu-matkul[hidden] { display: none; }
 
-/* ---------- 6. Mobile: papan geser (scroll-snap) + tab + indikator ---------- */
 .tab-hari {
     flex: 1; min-height: 40px;
     border-radius: 999px; background: #FFFFFF; color: var(--teks);
@@ -311,11 +284,9 @@ header.sticky { view-transition-name: navbar; }
     }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
-    /* tablet: papan tetap 5 kolom tapi bisa digeser */
     .papan { grid-template-columns: repeat(5, 236px); overflow-x: auto; padding-bottom: 6px; }
 }
 
-/* ---------- Matikan semua animasi untuk prefers-reduced-motion ---------- */
 @media (prefers-reduced-motion: reduce) {
     @view-transition { navigation: none; }
     *, *::before, *::after {

@@ -1,25 +1,12 @@
-/* =====================================================================
-   KULIYAAH - JavaScript vanilla (materi DOM & event listener)
-   Semua yang dilakukan di sini HANYA mengubah tampilan di browser.
-   Tidak ada data yang dikirim atau disimpan (aplikasi tanpa database).
-   ===================================================================== */
-
-// Kalau pengguna minta gerakan dikurangi, animasi JS juga dimatikan.
 const kurangiGerak = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---------------------------------------------------------------------
-   Halaman Jadwal & Tugas: klik chip status Belum <-> Selesai
-   Ini HANYA mengubah tampilan (DOM). Tidak ada data yang disimpan,
-   jadi saat halaman dimuat ulang status kembali sesuai array di controller.
-   --------------------------------------------------------------------- */
 function animasiUlang(el, namaKelas) {
     if (kurangiGerak) return;
     el.classList.remove(namaKelas);
-    void el.offsetWidth; // paksa reflow supaya animasi bisa diulang
+    void el.offsetWidth;
     el.classList.add(namaKelas);
 }
 
-/* Hitung ulang chip "Selesai" dan "Belum" di atas papan dari kartu yang ada */
 function perbaruiAngka() {
     const selesai = document.querySelectorAll('.chip-status.is-selesai').length;
     const belum = document.querySelectorAll('.chip-status.is-belum').length;
@@ -44,7 +31,7 @@ function siapkanPapanStatus() {
             chip.classList.toggle('is-belum', !jadiSelesai);
             chip.setAttribute('aria-pressed', String(jadiSelesai));
             chip.querySelector('.chip-teks').textContent = jadiSelesai ? 'Selesai' : 'Belum';
-            judul.classList.toggle('is-selesai', jadiSelesai); // coret / tidak dicoret
+            judul.classList.toggle('is-selesai', jadiSelesai);
 
             animasiUlang(chip, 'chip-pop');
             perbaruiAngka();
@@ -52,9 +39,6 @@ function siapkanPapanStatus() {
     });
 }
 
-/* ---------------------------------------------------------------------
-   Pencarian kartu (Jadwal & Tugas)
-   --------------------------------------------------------------------- */
 function siapkanPencarian() {
     const input = document.getElementById('cari');
     if (!input) return;
@@ -75,7 +59,6 @@ function siapkanPencarian() {
                 }
                 kartu.classList.remove('is-menghilang');
             } else if (!kartu.hidden && !kartu.classList.contains('is-menghilang')) {
-                // mengecil dulu, baru disembunyikan setelah transisi selesai
                 kartu.classList.add('is-menghilang');
                 setTimeout(() => {
                     if (kartu.classList.contains('is-menghilang')) kartu.hidden = true;
@@ -87,9 +70,6 @@ function siapkanPencarian() {
     });
 }
 
-/* ---------------------------------------------------------------------
-   Papan geser di mobile: tab hari + indikator titik
-   --------------------------------------------------------------------- */
 function siapkanPapanGeser() {
     const papan = document.getElementById('papan');
     if (!papan) return;
@@ -113,12 +93,10 @@ function siapkanPapanGeser() {
         tandaiAktif(index);
     }
 
-    // Klik tab -> papan bergeser ke kolom hari itu
     tab.forEach((t) => {
         t.addEventListener('click', () => geserKe(Number(t.dataset.index), true));
     });
 
-    // Saat digeser manual, cari kolom yang paling dekat lalu tandai aktif
     let jeda;
     papan.addEventListener('scroll', () => {
         clearTimeout(jeda);
@@ -128,15 +106,11 @@ function siapkanPapanGeser() {
         }, 60);
     });
 
-    // Saat halaman dibuka: langsung ke kolom hari ini
     const indexHariIni = Number(papan.dataset.hariIni || 0);
     if (modeMobile()) geserKe(indexHariIni, false);
     tandaiAktif(indexHariIni);
 }
 
-/* ---------------------------------------------------------------------
-   Dashboard: angka ringkasan menghitung naik dari 0
-   --------------------------------------------------------------------- */
 function jalankanCountUp() {
     document.querySelectorAll('[data-countup]').forEach((el) => {
         const target = Number(el.dataset.countup);
@@ -148,7 +122,7 @@ function jalankanCountUp() {
         const mulai = performance.now();
         function langkah(sekarang) {
             const t = Math.min((sekarang - mulai) / durasi, 1);
-            const halus = 1 - Math.pow(1 - t, 3); // ease-out
+            const halus = 1 - Math.pow(1 - t, 3);
             el.textContent = Math.round(target * halus);
             if (t < 1) requestAnimationFrame(langkah);
         }
@@ -157,13 +131,9 @@ function jalankanCountUp() {
     });
 }
 
-/* ---------------------------------------------------------------------
-   Profil: bar terisi dari 0 ke nilai sebenarnya
-   --------------------------------------------------------------------- */
 function isiBar() {
     const bar = document.querySelectorAll('.bar-isi');
     if (bar.length === 0) return;
-    // tunggu 2 frame supaya lebar 0 sempat digambar, lalu transisi ke nilai asli
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             bar.forEach((b) => { b.style.width = `${b.dataset.isi}%`; });
@@ -171,9 +141,6 @@ function isiBar() {
     });
 }
 
-/* ---------------------------------------------------------------------
-   Login: tombol Tampilkan / Sembunyikan password
-   --------------------------------------------------------------------- */
 function siapkanTombolPassword() {
     const tombol = document.getElementById('tombol-password');
     if (!tombol) return;
@@ -188,9 +155,6 @@ function siapkanTombolPassword() {
     });
 }
 
-/* ---------------------------------------------------------------------
-   Menu hamburger (mobile): panel meluncur dari kanan
-   --------------------------------------------------------------------- */
 function siapkanMenu() {
     const tombolBuka = document.getElementById('tombol-menu');
     if (!tombolBuka) return;
@@ -201,7 +165,7 @@ function siapkanMenu() {
     function buka() {
         panel.hidden = false;
         latar.hidden = false;
-        void panel.offsetWidth; // reflow supaya transisi jalan
+        void panel.offsetWidth;
         document.body.classList.add('menu-terbuka');
         tombolBuka.setAttribute('aria-expanded', 'true');
         tombolTutup.focus();
@@ -219,15 +183,12 @@ function siapkanMenu() {
 
     tombolBuka.addEventListener('click', buka);
     tombolTutup.addEventListener('click', tutup);
-    latar.addEventListener('click', tutup); // klik di luar panel
+    latar.addEventListener('click', tutup);
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && document.body.classList.contains('menu-terbuka')) tutup();
     });
 }
 
-/* ---------------------------------------------------------------------
-   Jalankan semua setelah HTML selesai dimuat
-   --------------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
     jalankanCountUp();
     isiBar();

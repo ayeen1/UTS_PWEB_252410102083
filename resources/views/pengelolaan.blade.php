@@ -16,7 +16,6 @@
                     <span class="md:hidden">Geser untuk hari lain.</span>
                 </p>
             </div>
-            {{-- Chip jumlah status dari controller (angka ikut berubah lewat app.js saat chip di kartu diklik) --}}
             <div class="flex flex-wrap items-center gap-2">
                 <span class="chip-ringkas bg-selesai"><x-ikon nama="centang" class="h-3.5 w-3.5" /> <b data-hitung="selesai">{{ $ringkasan['selesai'] }}</b> Selesai</span>
                 <span class="chip-ringkas bg-belum"><x-ikon nama="jam" class="h-3.5 w-3.5" /> <b data-hitung="belum">{{ $ringkasan['belum'] }}</b> Belum</span>
@@ -34,7 +33,6 @@
             </label>
         </div>
 
-        {{-- Tab hari (mobile) --}}
         <div class="mt-4 flex gap-2 md:hidden" role="tablist" aria-label="Pilih hari">
             @foreach ($daftarHari as $hari)
                 <button type="button" class="tab-hari {{ $hari === $hariIni ? 'is-hari-ini' : '' }}"
@@ -45,9 +43,7 @@
 </section>
 
 <div class="relative mx-auto -mt-16 max-w-7xl md:-mt-20 md:px-6">
-    {{-- Papan kolom per hari. Desktop: 5 kolom. Mobile: digeser horizontal (scroll-snap). --}}
     <div id="papan" class="papan" data-hari-ini="{{ $indexHariIni }}">
-        {{-- @foreach luar: ulangi daftar hari --}}
         @foreach ($daftarHari as $hari)
             @php($isiHari = $jadwalPerHari[$hari] ?? [])
             <section class="kolom-hari {{ $hari === $hariIni ? 'is-hari-ini' : '' }}" aria-label="{{ $hari }}">
@@ -62,7 +58,6 @@
                 </header>
 
                 <div class="space-y-3">
-                    {{-- @foreach dalam: ulangi kartu matkul di hari itu. $loop->index dipakai untuk jeda animasi --}}
                     @forelse ($isiHari as $item)
                         <x-kartu-matkul :item="$item" :urutan="$loop->index + $loop->parent->index" />
                     @empty
@@ -73,12 +68,10 @@
         @endforeach
     </div>
 
-    {{-- Pesan kalau pencarian tidak menemukan apa pun --}}
     <p id="cari-kosong" class="mx-4 mt-2 hidden rounded-2xl bg-white px-4 py-8 text-center text-teks-2 md:mx-0">
         Tidak ada mata kuliah atau tugas yang cocok.
     </p>
 
-    {{-- Indikator titik (mobile) --}}
     <div class="mt-4 flex flex-col items-center gap-2 md:hidden">
         <div class="flex items-center gap-1.5" id="indikator">
             @foreach ($daftarHari as $hari)

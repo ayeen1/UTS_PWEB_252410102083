@@ -1,7 +1,3 @@
-{{--
-    Komponen ikon SVG garis. Contoh pakai: <x-ikon nama="kalender" class="w-4 h-4" />
-    @props mendaftarkan atribut yang diterima komponen ini.
---}}
 @props(['nama'])
 
 <svg {{ $attributes->merge(['class' => 'w-4 h-4 shrink-0']) }} viewBox="0 0 24 24" fill="none" stroke="currentColor"

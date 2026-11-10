@@ -1,9 +1,3 @@
-{{--
-    Komponen navbar. Dipanggil di layout: <x-navbar :username="$username" :active="$active" />
-    - username : dibawa ke setiap link (?username=...) supaya tidak hilang saat pindah halaman
-    - active   : nama route yang sedang dibuka, untuk menandai menu aktif
-    - adaFoto  : true kalau public/images/foto-profil.jpg ada (kalau tidak, pakai inisial)
---}}
 @props(['username', 'active' => '', 'adaFoto' => false])
 
 <header class="sticky top-0 z-40 border-b border-garis bg-white">
@@ -12,7 +6,6 @@
             <x-logo :ukuran="36" />
         </a>
 
-        {{-- Menu desktop --}}
         <ul class="hidden items-center gap-2 md:flex">
             <li>
                 <a href="{{ route('dashboard', ['username' => $username]) }}"
@@ -34,7 +27,6 @@
             </li>
         </ul>
 
-        {{-- Info pengguna (desktop) --}}
         <div class="hidden items-center gap-3 md:flex">
             @if ($adaFoto)
                 <img src="{{ asset('images/foto-profil.jpg') }}" alt="" class="h-9 w-9 rounded-full object-cover">
@@ -49,14 +41,12 @@
             </span>
         </div>
 
-        {{-- Tombol hamburger (mobile) --}}
         <button type="button" id="tombol-menu" class="grid h-11 w-11 place-items-center rounded-xl border border-garis text-navy md:hidden"
                 aria-label="Buka menu" aria-expanded="false" aria-controls="panel-menu">
             <x-ikon nama="menu" class="h-6 w-6" />
         </button>
     </nav>
 
-    {{-- Panel menu mobile: meluncur dari kanan (diatur oleh app.js + app.css) --}}
     <div id="latar-menu" class="latar-menu md:hidden" hidden></div>
     <aside id="panel-menu" class="panel-menu md:hidden" aria-label="Menu" hidden>
         <div class="flex items-center justify-between border-b border-garis px-4 h-16">
